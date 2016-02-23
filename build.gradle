@@ -1,0 +1,68 @@
+plugins {
+    id 'war'
+    id 'jetty'
+    id 'java'
+}
+
+repositories {
+    maven { url 'https://dev.bbc.co.uk/artifactory/repo' }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+project.ext {
+    slf4jVersion = "1.7.12"
+    awsSdkVersion = "1.10.47"
+    springFrameworkVersion = "4.2.1.RELEASE"
+    camelVersion = "2.15.3"
+
+    acceptanceTestDir = "${projectDir}/COMPONENT_NAME-test"
+    acceptanceTestOutputDirs = ["${acceptanceTestDir}/cucumber/build", "${acceptanceTestDir}/cucumber/.gems"]
+}
+
+dependencies {
+    // External Dependencies
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    compile "org.springframework:spring-context:${springFrameworkVersion}"
+    compile "org.springframework:spring-webmvc:${springFrameworkVersion}"
+    compile "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    compile "org.apache.camel:camel-core:${camelVersion}"
+    compile "org.apache.camel:camel-spring-javaconfig:${camelVersion}"
+    compile("org.apache.camel:camel-aws:${camelVersion}") {
+        exclude group: "com.amazonaws"
+    }
+    compile("org.apache.camel:camel-jackson:${camelVersion}")
+
+    testCompile "org.apache.camel:camel-test:${camelVersion}"
+    testCompile "org.mockito:mockito-core:1.10.19"
+    testCompile "org.assertj:assertj-core:3.1.0"
+    testCompile "junit:junit:4.12"
+    testCompile "org.springframework:spring-test:${springFrameworkVersion}"
+}
+
+task acceptanceTest(type: Exec, dependsOn: 'assemble') { thisTask ->
+    group = "verification"
+    description = "Runs the acceptance tests"
+
+    inputs.dir "${projectDir}/src"
+    inputs.dir "${acceptanceTestDir}"
+    outputs.dir acceptanceTestOutputDirs
+
+    commandLine "${acceptanceTestDir}/cucumber/test"
+
+    check.dependsOn(thisTask)
+    thisTask.mustRunAfter(test)
+}
+
+task cleanAcceptanceTest(type: Delete) { thisTask ->
+    group = "verification"
+    description = "Deletes the acceptance test results"
+
+//    delete(acceptanceTestOutputDirs)
+    clean.dependsOn(thisTask)
+}
+
+project.stopKey = 'stop'
+project.stopPort = 8090

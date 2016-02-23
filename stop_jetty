@@ -1,0 +1,9 @@
+#!/bin/bash
+
+BASE_DIR="$( dirname "$0" )"
+
+if [ -f "$BASE_DIR"/gradlew ]; then
+  $BASE_DIR/gradlew -p $BASE_DIR JettyStop --debug
+else
+  gradle -p $BASE_IDR JettyStop --debug
+fi

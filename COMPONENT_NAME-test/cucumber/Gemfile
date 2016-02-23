@@ -1,0 +1,10 @@
+source "http://rubygems.org" do
+  gem 'cucumber'
+  gem 'process-helper'
+  gem 'childprocess'
+  gem 'erubis'
+  gem 'rspec-expectations'
+  gem 'aws-sdk', "~>2"
+  gem 'json_spec', '~> 1.1', '>= 1.1.4'
+end
+

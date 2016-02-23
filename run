@@ -1,0 +1,11 @@
+#!/bin/bash
+
+BASE_DIR="$( dirname "$0" )"
+
+export SPRING_PROFILES_ACTIVE=cucumber
+
+if [ -f "$BASE_DIR"/gradlew ]; then
+  $BASE_DIR/gradlew -p $BASE_DIR JettyRunWar --info
+else
+  gradle -p $BASE_DIR JettyRunWar --info
+fi

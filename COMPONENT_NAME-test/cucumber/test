@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd "$( dirname "$0" )"
+
+export SPRING_PROFILES_ACTIVE=cucumber
+
+mkdir -p build/test-results
+bundle install --path .gems
+exec bundle exec cucumber --color --expand --strict --format json -o build/test-results/cucumber.json --format pretty --tags ~@wip "$@"
